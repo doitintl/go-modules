@@ -19,11 +19,9 @@ func TestFnWorkerPool(t *testing.T) {
 
 	wg := &sync.WaitGroup{}
 	start := time.Now()
-	j := 0
 	for i := 0; i < countOfTasks; i++ {
 		wg.Add(1)
 		wp.AddTask(func(_ context.Context) {
-			j++
 			defer wg.Done()
 		})
 	}
@@ -31,10 +29,6 @@ func TestFnWorkerPool(t *testing.T) {
 
 	if time.Since(start) > time.Second*3 {
 		t.Errorf("Expected to finish in less than 3 seconds, took %s", time.Since(start))
-	}
-
-	if j != countOfTasks {
-		t.Errorf("Expected to process %d tasks, got %d", countOfTasks, j)
 	}
 
 	wp.RemoveWorkers(8)
