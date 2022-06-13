@@ -5,6 +5,13 @@ import (
 	"sync"
 )
 
+//go:generate mockery --name FnWorker
+type FnWorker interface {
+	Start(ctx context.Context)
+	Stop()
+	IsRunning() bool
+}
+
 // worker is a struct that contains input channel of tasks fn
 type fnworker struct {
 	tasks     chan TaskFunc
@@ -13,7 +20,7 @@ type fnworker struct {
 	mut       sync.Mutex
 }
 
-func NewFnWorker(tasks chan TaskFunc) *fnworker {
+func NewFnWorker(tasks chan TaskFunc) FnWorker {
 	return &fnworker{
 		tasks: tasks,
 		quit:  make(chan struct{}),

@@ -3,6 +3,7 @@ package worker
 import "context"
 
 // Task is a task to be executed by a worker.
+//go:generate mockery --name Task
 type Task interface {
 	Run(ctx context.Context)
 }

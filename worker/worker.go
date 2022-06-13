@@ -5,8 +5,9 @@ import (
 	"sync"
 )
 
+//go:generate mockery --name Worker
 type Worker interface {
-	Start()
+	Start(ctx context.Context)
 	Stop()
 	IsRunning() bool
 }
@@ -22,7 +23,7 @@ type worker struct {
 // NewWorker creates a new worker with input channel of tasks
 // and returns a pointer to the worker
 // The worker is not started yet
-func NewWorker(tasks chan Task) *worker {
+func NewWorker(tasks chan Task) Worker {
 	return &worker{
 		tasks: tasks,
 		quit:  make(chan struct{}),

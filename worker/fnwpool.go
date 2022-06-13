@@ -5,16 +5,26 @@ import (
 	"sync"
 )
 
+//go:generate mockery --name FnWorkerPool
+type FnWorkerPool interface {
+	AddTask(task TaskFunc)
+	TaskChannel() chan TaskFunc
+	WorkersCount() int
+	AddWorkers(count int)
+	RemoveWorkers(count int)
+	Stop()
+}
+
 type fnworkerPool struct {
 	mux         sync.Mutex
 	ctx         context.Context
 	taskChannel chan TaskFunc
-	workers     []*fnworker
+	workers     []FnWorker
 }
 
-func NewFnWorkerPool(ctx context.Context, taskChannel chan TaskFunc, numWorkers int) *fnworkerPool {
+func NewFnWorkerPool(ctx context.Context, taskChannel chan TaskFunc, numWorkers int) FnWorkerPool {
 	pool := &fnworkerPool{
-		workers:     make([]*fnworker, numWorkers),
+		workers:     make([]FnWorker, numWorkers),
 		ctx:         ctx,
 		taskChannel: taskChannel,
 	}

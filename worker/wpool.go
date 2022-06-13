@@ -5,11 +5,21 @@ import (
 	"sync"
 )
 
+//go:generate mockery --name WorkerPool
+type WorkerPool interface {
+	AddTask(task Task)
+	TaskChannel() chan Task
+	WorkersCount() int
+	AddWorkers(count int)
+	RemoveWorkers(count int)
+	Stop()
+}
+
 type workerPool struct {
 	mux         sync.Mutex
 	ctx         context.Context
 	taskChannel chan Task
-	workers     []*worker
+	workers     []Worker
 }
 
 // NewWorkerPool creates a new worker workerPool
@@ -17,9 +27,9 @@ type workerPool struct {
 // The task channel is used to send tasks to the workers.
 // The workers are started immediately.
 // The workers are stopped when the workerPool is stopped.
-func NewWorkerPool(ctx context.Context, taskChannel chan Task, numWorkers int) *workerPool {
+func NewWorkerPool(ctx context.Context, taskChannel chan Task, numWorkers int) WorkerPool {
 	pool := &workerPool{
-		workers:     make([]*worker, numWorkers),
+		workers:     make([]Worker, numWorkers),
 		ctx:         ctx,
 		taskChannel: taskChannel,
 	}
