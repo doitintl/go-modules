@@ -66,5 +66,3 @@ You can start again the pool.
     wp.Start(ctx)
 ```
 
-
-You can 
